@@ -1,6 +1,7 @@
+# Private
 /private
 */secrets.h
-TimeSketches/Time_SerialMonitor/secrets.h
+
 
 # Prerequisites
 *.d
