@@ -13,7 +13,7 @@
 
 #include <Arduino_MKRENV.h>
 
-const float numSamples = 10;
+const float numSamples = 100;
 
 void setup() {
   Serial.begin(9600);
@@ -29,18 +29,24 @@ void loop() {
   // read all the sensor values
   //float temperature = ENV.readTemperature();
   float temperature = 0;
-  float humidity    = ENV.readHumidity();
-  float pressure    = ENV.readPressure();
-  float illuminance = ENV.readIlluminance();
-  float uva         = ENV.readUVA();
-  float uvb         = ENV.readUVB();
-  float uvIndex     = ENV.readUVIndex();
+  float humidity    = 0;
+  float pressure    = 0;
+  float illuminance = 0;
+  float uva         = 0;
+  float uvb         = 0;
+  float uvIndex     = 0;
 
-  //Get 10 temperature values and average
+  //Get temperature values and average
   for (int isample = 0; isample < numSamples; ++isample) {
     temperature = temperature + ENV.readTemperature() / numSamples;
-    delay(20);
-  }
+    humidity = humidity + ENV.readHumidity() / numSamples;
+    pressure = pressure + ENV.readPressure() / numSamples; 
+    illuminance = illuminance + ENV.readIlluminance() / numSamples;
+    uva = uva + ENV.readUVA() / numSamples;
+    uvb = uvb + ENV.readUVB() / numSamples;
+    uvIndex = uvIndex + ENV.readUVIndex() / numSamples;
+    delay(10);
+  }  
   
   // print each of the sensor values
   Serial.print("Temperature = ");
@@ -72,5 +78,5 @@ void loop() {
   Serial.println();
 
   // wait 1 second to print again
-  delay(1000);
+  //delay(1000);
 }
