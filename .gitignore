@@ -1,6 +1,6 @@
 # Private
 /private
-*/secrets.h
+**/secrets.h
 
 
 # Prerequisites
@@ -35,3 +35,4 @@
 *.exe
 *.out
 *.app
+
