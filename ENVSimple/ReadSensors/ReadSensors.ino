@@ -9,11 +9,39 @@
   - Arduino MKR ENV Shield attached
 
   This example code is in the public domain.
+
+   WriteMultipleFields
+  
+  Description: Writes values to fields 1,2,3,4 and status in a single ThingSpeak update every 20 seconds.
+  
+  Hardware: Arduino MKR WiFi 1010
+  
+  !!! IMPORTANT - Modify the secrets.h file for this project with your network connection and ThingSpeak channel details. !!!
+  
+  Note:
+  - Requires WiFiNINA library
+  - This example is written for a network using WPA encryption. For WEP or WPA, change the WiFi.begin() call accordingly.
+  
+  ThingSpeak ( https://www.thingspeak.com ) is an analytic IoT platform service that allows you to aggregate, visualize, and 
+  analyze live data streams in the cloud. Visit https://www.thingspeak.com to sign up for a free account and create a channel.  
+  
+  Documentation for the ThingSpeak Communication Library for Arduino is in the README.md folder where the library was installed.
+  See https://www.mathworks.com/help/thingspeak/index.html for the full ThingSpeak documentation.
+  
+  For licensing information, see the accompanying license file.
+  
+  Copyright 2020, The MathWorks, Inc.
 */
 
+// Sensor stuff
 #include <Arduino_MKRENV.h>
 
-const float numSamples = 100;
+// ThingSpeak stuff
+#include <WiFiNINA.h>
+#include "secrets.h"
+#include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
+
+const float numSamples = 50;
 
 void setup() {
   Serial.begin(9600);
@@ -76,7 +104,4 @@ void loop() {
 
   // print an empty line
   Serial.println();
-
-  // wait 1 second to print again
-  //delay(1000);
 }
