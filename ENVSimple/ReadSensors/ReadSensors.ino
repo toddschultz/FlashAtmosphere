@@ -36,10 +36,13 @@
 // Sensor stuff
 #include <Arduino_MKRENV.h>
 
-// ThingSpeak stuff
+// Wifi stuff
 #include <WiFiNINA.h>
-#include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
 #include "secrets.h"
+
+// ThingSpeak stuff
+#include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
+
 WiFiClient client;
 
 char ssid[] = SECRET_SSID;   // your network SSID (name) 
@@ -62,6 +65,18 @@ void setup() {
   if (!ENV.begin()) {
     Serial.println("Failed to initialize MKR ENV Shield!");
     while (1);
+  }
+
+  // Connect to WiFi
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(SECRET_SSID);
+    while(WiFi.status() != WL_CONNECTED){
+      WiFi.begin(ssid, pass); // Connect to WPA/WPA2 network. Change this line if using open or WEP network
+      Serial.print(".");
+      delay(5000);     
+    } 
+    Serial.println("\nConnected.");
   }
 
   // Initialize ThingSpeak
