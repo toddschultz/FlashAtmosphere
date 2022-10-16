@@ -38,22 +38,48 @@
 
 // ThingSpeak stuff
 #include <WiFiNINA.h>
-#include "secrets.h"
 #include "ThingSpeak.h" // always include thingspeak header file after other header files and custom macros
+#include "secrets.h"
+WiFiClient client;
 
-const float numSamples = 50;
+char ssid[] = SECRET_SSID;   // your network SSID (name) 
+char pass[] = SECRET_PWD;   // your network passwords
+
+unsigned long myChannelNumber = SECRET_CH_ID;
+const char * myWriteAPIKey = SECRET_WRITE_APIKEY;
+
+// Need 20 seconds between writes to ThingSpeak
+// 20000 / 100 = 200
+// Number of samples for averaging
+const float numSamples = 100;
+// Time delay between samples in  milliseconds
+const unsigned long sampletime = 200;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);
 
   if (!ENV.begin()) {
     Serial.println("Failed to initialize MKR ENV Shield!");
     while (1);
   }
+
+  // Initialize ThingSpeak
+  ThingSpeak.begin(client);
 }
 
 void loop() {
+  // Connect to WiFi
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(SECRET_SSID);
+    while(WiFi.status() != WL_CONNECTED){
+      WiFi.begin(ssid, pass); // Connect to WPA/WPA2 network. Change this line if using open or WEP network
+      Serial.print(".");
+      delay(5000);     
+    } 
+    Serial.println("\nConnected.");
+  }
   // read all the sensor values
   //float temperature = ENV.readTemperature();
   float temperature = 0;
@@ -73,9 +99,27 @@ void loop() {
     uva = uva + ENV.readUVA() / numSamples;
     uvb = uvb + ENV.readUVB() / numSamples;
     uvIndex = uvIndex + ENV.readUVIndex() / numSamples;
-    delay(10);
+    delay(sampletime);
   }  
   
+  // set the fields with the values
+  ThingSpeak.setField(1, temperature);
+  ThingSpeak.setField(2, humidity);
+  ThingSpeak.setField(3, pressure);
+  ThingSpeak.setField(4, illuminance);
+  ThingSpeak.setField(5, uva);
+  ThingSpeak.setField(6, uvb);
+  ThingSpeak.setField(7, uvIndex);
+  
+  // write to the ThingSpeak channel
+  int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
+  if(x == 200){
+    Serial.println("Channel update successful.");
+  }
+  else{
+    Serial.println("Problem updating channel. HTTP error code " + String(x));
+  }
+
   // print each of the sensor values
   Serial.print("Temperature = ");
   Serial.print(temperature);
