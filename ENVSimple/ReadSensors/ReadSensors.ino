@@ -36,6 +36,9 @@
 // Sensor stuff
 #include <Arduino_MKRENV.h>
 
+// ENV temperature offset correction
+const float deltatempC = 11*5/9;
+
 // Wifi stuff
 #include <WiFiNINA.h>
 #include "secrets.h"
@@ -116,7 +119,9 @@ void loop() {
     uvIndex = uvIndex + ENV.readUVIndex() / numSamples;
     delay(sampletime);
   }  
-  
+  //Correct temperature bias
+  temperature = temperature - deltatempC;
+    
   // set the fields with the values
   ThingSpeak.setField(1, temperature);
   ThingSpeak.setField(2, humidity);
@@ -139,6 +144,10 @@ void loop() {
   Serial.print("Temperature = ");
   Serial.print(temperature);
   Serial.println(" °C");
+  
+  Serial.print("Temperature = ");
+  Serial.print(temperature*9/5+32);
+  Serial.println(" °F");
 
   Serial.print("Humidity    = ");
   Serial.print(humidity);
