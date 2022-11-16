@@ -1,5 +1,6 @@
 /*
   MKR ENV Shield - Read Sensors
+  Grove Carrier and Sensors
 
   This example reads the sensors on-board the MKR ENV Shield
   and prints them to the Serial Monitor once a second.
@@ -31,7 +32,25 @@
   For licensing information, see the accompanying license file.
   
   Copyright 2020, The MathWorks, Inc.
+
+
+Grove Example
+Example testing sketch for various DHT humidity/temperature sensors
+Written by ladyada, public domain
 */
+
+//grove stuff
+#include <DHT.h>
+#include <Wire.h>
+
+#define DHTPIN 0     // what digital pin we're connected to
+
+// Uncomment whatever type you're using!
+//#define DHTTYPE DHT11   // DHT 11 
+#define DHTTYPE DHT22   // DHT 22  (AM2302)
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
+
+DHT dht(DHTPIN, DHTTYPE);
 
 // Sensor stuff
 #include <Arduino_MKRENV.h>
@@ -69,6 +88,10 @@ void setup() {
     Serial.println("Failed to initialize MKR ENV Shield!");
     while (1);
   }
+  
+// dht22 sensors
+  Wire.begin();
+  dht.begin();
 
   // Connect to WiFi
   if(WiFi.status() != WL_CONNECTED){
@@ -107,6 +130,8 @@ void loop() {
   float uva         = 0;
   float uvb         = 0;
   float uvIndex     = 0;
+  float dht22temp   = 0;
+  float dht22rh     = 0;
 
   //Get temperature values and average
   for (int isample = 0; isample < numSamples; ++isample) {
@@ -117,6 +142,8 @@ void loop() {
     uva = uva + ENV.readUVA() / numSamples;
     uvb = uvb + ENV.readUVB() / numSamples;
     uvIndex = uvIndex + ENV.readUVIndex() / numSamples;
+    dht22temp = dht22temp + dht.readTemperature() / numSamples;
+    dht22rh = dht22rh + dht.readHumidity() / numSamples;    
     delay(sampletime);
   }  
   //Correct temperature bias
@@ -127,9 +154,9 @@ void loop() {
   ThingSpeak.setField(2, humidity);
   ThingSpeak.setField(3, pressure);
   ThingSpeak.setField(4, illuminance);
-  ThingSpeak.setField(5, uva);
-  ThingSpeak.setField(6, uvb);
-  ThingSpeak.setField(7, uvIndex);
+  ThingSpeak.setField(5, uvIndex);
+  ThingSpeak.setField(6, dht22temp);
+  ThingSpeak.setField(7, dht22rh);
   
   // write to the ThingSpeak channel
   int x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
@@ -169,6 +196,14 @@ void loop() {
 
   Serial.print("UV Index    = ");
   Serial.println(uvIndex);
+
+  Serial.print("DHT Temperature: "); 
+  Serial.print(dht22temp);
+  Serial.println(" °C");
+
+  Serial.print("DHT Humidity: "); 
+  Serial.print(dht22rh);
+  Serial.println("%");
 
   // print an empty line
   Serial.println();
