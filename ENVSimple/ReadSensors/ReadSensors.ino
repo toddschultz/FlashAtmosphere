@@ -82,17 +82,12 @@ const unsigned long sampletime = 200;
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial);
-
-  if (!ENV.begin()) {
-    Serial.println("Failed to initialize MKR ENV Shield!");
-    while (1);
+  // check for the WiFi module:
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed!");
+    // don't continue
+    while (true);
   }
-  
-// dht22 sensors
-  Wire.begin();
-  dht.begin();
-
   // Connect to WiFi
   if(WiFi.status() != WL_CONNECTED){
     Serial.print("Attempting to connect to SSID: ");
@@ -103,7 +98,17 @@ void setup() {
       delay(5000);     
     } 
     Serial.println("\nConnected.");
+  }  
+
+  //  while (!Serial);
+  if (!ENV.begin()) {
+    Serial.println("Failed to initialize MKR ENV Shield!");
+    while (1);
   }
+  
+// dht22 sensors
+  Wire.begin();
+  dht.begin();
 
   // Initialize ThingSpeak
   ThingSpeak.begin(client);
