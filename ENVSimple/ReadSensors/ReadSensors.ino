@@ -56,7 +56,7 @@ DHT dht(DHTPIN, DHTTYPE);
 #include <Arduino_MKRENV.h>
 
 // ENV temperature offset correction
-const float deltatempC = 0; //11*5/9;
+const float deltatempC = 4.3; // calibrated against DHT22 (Nov 2022)
 
 // Wifi stuff
 #include <WiFiNINA.h>
