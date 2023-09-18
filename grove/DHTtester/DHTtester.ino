@@ -4,7 +4,8 @@
 #include <DHT.h>
 #include <Wire.h>
 
-#define DHTPIN 0     // what digital pin we're connected to
+#define DHTPIN 12     // what digital pin we're connected to
+// pin 12 for the IOT-BOTS enclosures
 
 // Uncomment whatever type you're using!
 //#define DHTTYPE DHT11   // DHT 11 
@@ -16,7 +17,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 void setup() 
 {
-    Serial.begin(115200); 
+    Serial.begin(9600); 
     while (!Serial);
     Serial.println("DHTxx test!");
     Wire.begin();
@@ -26,6 +27,7 @@ void setup()
     // digitalWrite(PIN_GROVE_POWER, 1);
 
     dht.begin();
+    Serial.println("Finished Set up!");
 }
 
 void loop() 
